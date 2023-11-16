@@ -1,0 +1,8 @@
+k1:word1
+k2:word2
+k3:word3
+k4:word4
+k5:word5
+k6:word6
+k7:word7
+k8:word8
