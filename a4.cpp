@@ -1,222 +1,17 @@
+#include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <vector>
 #include <algorithm>
 #include <fstream>
-#include <stack>
-#include <queue>
-
-using namespace std;
-struct Vec2 {
-    float x,y;
-    Vec2(float x, float y) {
-        this->x = x;
-        this->y = y;
-    }
-};
-
-struct Vertex {
-    Vec2* value;
-    std::vector<Vertex*> neightbours;
-    int id;
-
-    Vertex() {
-    }
-
-    ~Vertex() {
-        delete value;
-    }
-};
-
-class Graph {
-    public:
-        std::vector<Vertex*> vertexList;
-        
-        Graph() {
-        }
-
-        ~Graph() {
-            // delete vertexList; // does this also run the delete for all the Vertex class?
-            // remove data from memory
-            for(int i=0; i<vertexList.size(); i++) {
-                delete vertexList[i];
-            }
-            vertexList.clear(); // does this deallocate vertexList from heap?            
-        }
-
-        void PrintVertices() {
-           for(int i=0; i<vertexList.size(); i++) {
-                printf("%i: (%f, %f)\n", i, vertexList[i]->value->x, vertexList[i]->value->y);        
-           }
-        }
-
-        void PrintNeighbours() {
-            for(int i=0; i<vertexList.size(); i++) {
-                printf("--- ( %f, %f ) neighbours ---\n", vertexList[i]->value->x, vertexList[i]->value->y);
-                for (int j=0; j<vertexList[i]->neightbours.size(); j++) {
-                    printf("%i: (%f, %f)\n", j, vertexList[i]->neightbours[j]->value->x, vertexList[i]->neightbours[j]->value->y);        
-                }                                
-           }
-        }                
-        
-        static std::vector<Vertex*> DFT(Vertex* startVertex, std::vector<Vertex*> discoveredList) {
-            discoveredList.push_back(startVertex);
-            std::vector<Vertex*> neighbours = startVertex->neightbours;
-            for(int i=0; i<neighbours.size(); i++) {
-                if (std::find(discoveredList.begin(), discoveredList.end(), neighbours[i]) == discoveredList.end()) {                    
-                    discoveredList = DFT(neighbours[i], discoveredList);
-                }
-            }
-            return discoveredList;
-        };
-
-        static std::vector<Vertex*> BFT(std::vector<Vertex*> visited, std::vector<Vertex*> unvisited) {
-            int currentUnVisitedSize = unvisited.size();
-            for (int i=0; i<currentUnVisitedSize; i++) {
-                if (std::find(visited.begin(), visited.end(), unvisited[i]) == visited.end()) {
-                    visited.push_back(unvisited[i]);
-                }
-                for (int j=0; j<unvisited[i]->neightbours.size(); j++) {
-                    // if not yet visited and not already in unvisited list, add to unvisited list
-                    if (std::find(visited.begin(), visited.end(), unvisited[i]->neightbours[j]) == visited.end() &&
-                        std::find(unvisited.begin(), unvisited.end(), unvisited[i]->neightbours[j]) == unvisited.end()) {
-                        unvisited.push_back(unvisited[i]->neightbours[j]);
-                    }
-                }
-            }
-            // if there are more unvisited then visited, then it means we need to continue traversing
-            if (unvisited.size() > visited.size()) {
-                visited = BFT(visited, unvisited);
-            }
-            return visited;
-        };
-
-        static std::vector<Vertex*> DFTEarlyExit(Vertex* startVertex, std::vector<Vertex*> discoveredList, int *count, int exitCount) {
-            discoveredList.push_back(startVertex);
-            *count = *count + 1;            
-            std::vector<Vertex*> neighbours = startVertex->neightbours;
-            for(int i=0; i<neighbours.size(); i++) {
-                if (*count >= exitCount) {
-                    return discoveredList;
-                }
-                if (std::find(discoveredList.begin(), discoveredList.end(), neighbours[i]) == discoveredList.end()) {                    
-                    discoveredList = DFTEarlyExit(neighbours[i], discoveredList, count, exitCount);
-                }                
-            }            
-            return discoveredList;
-        };
-
-        static std::vector<Vertex*> BFTEarlyExit(std::vector<Vertex*> visited, std::vector<Vertex*> unvisited, int *count, int exitCount) {
-            int currentUnVisitedSize = unvisited.size();
-            for (int i=0; i<currentUnVisitedSize; i++) {
-                if (std::find(visited.begin(), visited.end(), unvisited[i]) == visited.end()) {
-                    visited.push_back(unvisited[i]);
-                    *count = *count + 1;
-                    if (*count >= exitCount) {
-                        return visited;
-                    }
-                }
-                for (int j=0; j<unvisited[i]->neightbours.size(); j++) {
-                    // if not yet visited and not already in unvisited list, add to unvisited list                    
-                    if (std::find(visited.begin(), visited.end(), unvisited[i]->neightbours[j]) == visited.end() &&
-                        std::find(unvisited.begin(), unvisited.end(), unvisited[i]->neightbours[j]) == unvisited.end()) {
-                        unvisited.push_back(unvisited[i]->neightbours[j]);
-                    }
-                }
-            }
-            // if there are more unvisited then visited, then it means we need to continue traversing
-            if (unvisited.size() > visited.size()) {
-                visited = BFTEarlyExit(visited, unvisited, count, exitCount);
-            }            
-            return visited;
-        };
-        
-        static std::vector<Vertex*> DFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path) {            
-            
-            return path;
-        };
-
-        static std::vector<Vertex*> BFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path) {
-            return path;
-        };
-};
-
-class Grid : public Graph {
-    public:    
-        Vec2* size;
-
-        Grid() {
-            size = new Vec2(0, 0);             
-        }
-
-        ~Grid() {
-            // delete vertexList; // does this also run the delete for all the Vertex class?
-            // remove data from memory
-            for(int i=0; i<vertexList.size(); i++) {
-                delete vertexList[i];
-            }
-            vertexList.clear(); // does this deallocate vertexList from heap?            
-        }
-
-        void PrettyPrint() {
-            float y = 0;
-            float x = 0;
-            for(Vertex* v: vertexList) {
-                if (v->value->y > y) {
-                    while(x < size->x) {
-                        printf("X");
-                        x += 1;                        
-                    }
-                    printf("\n");
-                    x = 0;
-                    y = v->value->y;
-                }
-                while(v->value->x > x) {
-                    printf("X");
-                    x += 1;
-                }                                
-                printf(".");                
-                x = v->value->x + 1;                            
-            }
-            printf("\n");
-        }
-
-        void PrettyPrint(std::vector<Vertex*> visited) {
-            float y = 0;
-            float x = 0;
-            for(Vertex* v: vertexList) {
-                if (v->value->y > y) {
-                    while(x < size->x) {
-                        printf("X");
-                        x += 1;                        
-                    }
-                    printf("\n");
-                    x = 0;
-                    y = v->value->y;
-                }
-                while(v->value->x > x) {
-                    printf("X");
-                    x += 1;
-                }
-                if (std::find(visited.begin(), visited.end(), v) == visited.end()) {
-                    printf(".");                
-                }
-                else if (v == visited[visited.size() - 1])
-                {
-                    printf("C");
-                }
-                else {
-                    printf("o");
-                }                                
-                x = v->value->x + 1;                            
-            }
-            printf("\n");        
-        }      
-};
+#include <map>
+#include "Graph/Grid.h"
 
 int main() {
+    srand(time(NULL));
     Grid* grid = new Grid();
     std::string line;
-    std::ifstream myfile ("GraphNodes.txt");
+    std::ifstream myfile ("data/GraphNodes.txt");
     // open file here
     int x = 0, y = 0, idx = 0;    
     if (myfile.is_open()) {
@@ -258,47 +53,82 @@ int main() {
     //     }
     // }    
 
-    // add neighbours here
+    // add neighbours here, TODO: refactor this into Graph
     for(int i=0; i<n; i++) {        
         for (int j=0; j<n; j++) {
             if (j != i) {
+                // float weight = std::rand() % 100;
+                float weight = 1;
+                bool isAdd = false;
+
                 if (grid->vertexList[i]->value->x + 1 == grid->vertexList[j]->value->x && grid->vertexList[i]->value->y == grid->vertexList[j]->value->y) {
-                    grid->vertexList[i]->neightbours.push_back(grid->vertexList[j]);
+                    // we should be able to just check for 1 side because we will be adding neighbours to both sides
+                    isAdd = true;           
                 }
                 if (grid->vertexList[i]->value->x - 1 == grid->vertexList[j]->value->x && grid->vertexList[i]->value->y == grid->vertexList[j]->value->y) {
-                    grid->vertexList[i]->neightbours.push_back(grid->vertexList[j]);
+                    isAdd = true;
                 }
                 if (grid->vertexList[i]->value->x == grid->vertexList[j]->value->x && grid->vertexList[i]->value->y + 1 == grid->vertexList[j]->value->y) {            
-                    grid->vertexList[i]->neightbours.push_back(grid->vertexList[j]);
+                    isAdd = true;
                 }
                 if (grid->vertexList[i]->value->x == grid->vertexList[j]->value->x && grid->vertexList[i]->value->y - 1 == grid->vertexList[j]->value->y) {            
-                    grid->vertexList[i]->neightbours.push_back(grid->vertexList[j]);
+                    isAdd = true;
+                }
+
+                if (isAdd) {
+                    auto found1 = std::find(grid->vertexList[i]->neightbours.begin(), grid->vertexList[i]->neightbours.end(), grid->vertexList[j]);
+                    // auto found2 = std::find(grid->vertexList[j]->neightbours.begin(), grid->vertexList[j]->neightbours.end(), grid->vertexList[i]);
+                    
+                    if (found1 == grid->vertexList[i]->neightbours.end()) {
+                        grid->vertexList[i]->neightbours.push_back(grid->vertexList[j]);
+                        grid->vertexList[i]->neighbourEdgeWeights[grid->vertexList[j]] = weight;                    
+                        grid->vertexList[j]->neightbours.push_back(grid->vertexList[i]);                                
+                        grid->vertexList[j]->neighbourEdgeWeights[grid->vertexList[i]] = weight;
+                    }
                 }                
             }
         }
-    }    
+    }
+    // randomly pick a start and end vertex
+    int startVertexIdx = rand() % grid->vertexList.size();
+    int endVertexIdx = rand() % grid->vertexList.size();    
 
     // grid->PrintVertices();
     // grid->PrintNeighbours();
     grid->PrettyPrint();
     
     printf("\n");
-    printf("enter b for BFS\nenter d for DFS\n");
+    printf("enter b for BFS\nenter d for DFS\nenter a for AStar\n");
     char c = ' ';
-    cin >> c;
+    std::cin >> c;
 
     int count = 1;
     int currentCount = 0;                
-        
-    if (c == 'd') {
+    if (c == 'a') {
+        std::vector<Vertex*> path = grid->Astar(grid->vertexList[startVertexIdx], grid->vertexList[endVertexIdx]);
+        // printf("---- start: (%f, %f), end: (%f, %f) ----\n", grid->vertexList[startVertexIdx]->value->x, grid->vertexList[startVertexIdx]->value->y, grid->vertexList[endVertexIdx]->value->x, grid->vertexList[endVertexIdx]->value->y);
+        // for(Vertex* v:path) {
+        //     printf("(%f, %f), ", v->value->x, v->value->y);
+        // }
+        // printf("\n");
+        std::vector<Vertex*> temp;
+        int idx = 0;
+        do {
+            std::cin.ignore();            
+            temp.push_back(path[idx]);
+            grid->PrettyPrint(temp, path[path.size()-1]);
+            idx += 1;                        
+        } while(temp.size() < path.size());
+
+    } else if (c == 'd') {
         // traverse in depth first order (from first vertex)
         // printf("--- depth first traversal ---\n");
         std::vector<Vertex*> dfoList;    
         while(count <= grid->vertexList.size()) {
-            cin.ignore();
+            std::cin.ignore();
             dfoList.clear();
             dfoList = Graph::DFTEarlyExit(grid->vertexList[0], dfoList, &currentCount, count);
-            grid->PrettyPrint(dfoList);
+            grid->PrettyPrint(dfoList, nullptr);
             count += 1;
             currentCount = 0;        
         }
@@ -311,10 +141,10 @@ int main() {
         std::vector<Vertex*> unvisited;
         unvisited.push_back(grid->vertexList[0]);
         while(count <= grid->vertexList.size()) {
-            cin.ignore();
+            std::cin.ignore();
             visited.clear();
             visited = Graph::BFTEarlyExit(visited, unvisited, &currentCount, count);
-            grid->PrettyPrint(visited);
+            grid->PrettyPrint(visited, nullptr);
             count += 1;
             currentCount = 0;        
         }
