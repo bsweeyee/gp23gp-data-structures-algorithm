@@ -61,11 +61,11 @@ bool validateSorted(int* array, int length) {
 void print_array(std::string beforeText, int* array, int length) {
     printf("---- %s (Sort validated: %d) ----\n", beforeText.c_str(), validateSorted(array, length));    
 
-    // if (length > 10) return;
-    // for(int i=0; i<length; i++) {
-    //     printf("(%i: %i),", i, array[i]);
-    // }    
-    // printf("\n");
+    if (length > 10) return;
+    for(int i=0; i<length; i++) {
+        printf("(%i: %i),", i, array[i]);
+    }    
+    printf("\n");
 }
 
 void reassign(int* array, int* target, int length) {    

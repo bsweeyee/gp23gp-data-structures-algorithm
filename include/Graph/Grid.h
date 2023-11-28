@@ -14,9 +14,9 @@ class Grid : public Graph {
         ~Grid() {
             // delete vertexList; // does this also run the delete for all the Vertex class?
             // remove data from memory
-            for(int i=0; i<vertexList.size(); i++) {
-                delete vertexList[i];
-            }
+            for (Vertex* v: vertexList) {
+                delete v;
+            }            
             vertexList.clear(); // does this deallocate vertexList from heap?            
         }
 
@@ -68,11 +68,11 @@ void Grid::PrettyPrint(std::vector<Vertex*> visited, Vertex* target) {
         }
         if (v == visited[visited.size() - 1])
         {                    
-            printf("C");                    
+            printf("S");                    
         }                
         else if (std::find(visited.begin(), visited.end(), v) == visited.end()) {
             if (target != nullptr && v == target) {
-                printf("H");
+                printf("G");
             } else {
                 printf("*");                
             }

@@ -181,30 +181,22 @@ namespace Sort {
         int leftPointerIdx = left;
         int middlePointerIdx = mid + 1;
 
-        // loop through from left to right
-        for(int i=0; i <size; i++) {
-            /*
-                there's 2 logic being checked here:
-                1. we set the array[i] value to the leftPointerPosition in the tempArray if it is smaller than the value at the rightPointerIndex
-                2. we also check if the looped index i, is already beyond the mid point. if so, everything should just be assigned to the rightPointerIndex. ( all items smaller than the current rightPointer have all been assigned ) 
-            */ 
-            int value = array[leftPointerIdx];
-            if (middlePointerIdx >= left + size) {
-                tempArray[i] = value;
+        // loop through from 0 to size of tempArray
+        for(int i=0; i <size; i++) {            
+            if (middlePointerIdx >= left + size) { // we check if mid pointer idx is already larger than range, if so we can automatically assign the left pointer idx into the rest of the array in order ( because they would have been sorted )
+                tempArray[i] = array[leftPointerIdx];
                 leftPointerIdx += 1;                
-            } else if (leftPointerIdx >= mid + 1) {
-                value = array[middlePointerIdx];
-                tempArray[i] = value;
+            } else if (leftPointerIdx >= mid + 1) { // we check if left pointer idx is already larger than mid point, if so we can automatically assign the mid pointer idx into the rest of the array in order ( because they would have been sorted )
+                tempArray[i] = array[middlePointerIdx];
                 middlePointerIdx += 1;
             }
             else {
-                // check current value with middle, if it's smaller we assign to left of new array else assign to right            
-                if (value <= array[middlePointerIdx]) {
-                    tempArray[i] = value;
+                // check current value with middle, if it's smaller we assign to left index of new array else assign to middle index            
+                if (array[leftPointerIdx] <= array[middlePointerIdx]) {
+                    tempArray[i] = array[leftPointerIdx];
                     leftPointerIdx += 1;
                 } else {
-                    value = array[middlePointerIdx];
-                    tempArray[i] = value;                    
+                    tempArray[i] = array[middlePointerIdx];                    
                     middlePointerIdx += 1;
                 }               
             }       

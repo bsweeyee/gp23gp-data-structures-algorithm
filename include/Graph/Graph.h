@@ -2,6 +2,9 @@
 #define _GRAPH_H_
 
 #include <vector>
+#include <map>
+#include <stack>
+#include <queue>
 #include <iostream>
 #include <algorithm>
 #include <limits>
@@ -23,22 +26,31 @@ class Graph {
             vertexList.clear(); // does this deallocate vertexList from heap?            
         }                        
         
-        static std::vector<Vertex*> DFT(Vertex* startVertex, std::vector<Vertex*> discoveredList) {
+        static std::vector<Vertex*> DFSRecursive(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> discoveredList) {
             discoveredList.push_back(startVertex);
             std::vector<Vertex*> neighbours = startVertex->neightbours;
             for(int i=0; i<neighbours.size(); i++) {
-                if (std::find(discoveredList.begin(), discoveredList.end(), neighbours[i]) == discoveredList.end()) {                    
-                    discoveredList = DFT(neighbours[i], discoveredList);
+                if (std::find(discoveredList.begin(), discoveredList.end(), targetVertex) != discoveredList.end()) {
+                    return discoveredList;
                 }
-            }
+                if (std::find(discoveredList.begin(), discoveredList.end(), neighbours[i]) == discoveredList.end()) {                    
+                    discoveredList = DFSRecursive(neighbours[i], targetVertex, discoveredList);                    
+                }                
+            }            
             return discoveredList;
         };
 
-        static std::vector<Vertex*> BFT(std::vector<Vertex*> visited, std::vector<Vertex*> unvisited) {
-            int currentUnVisitedSize = unvisited.size();
+        static std::vector<Vertex*> BFSReursive(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> visited, std::vector<Vertex*> unvisited) {
+            if (unvisited.size() == 0) {
+                unvisited.push_back(startVertex);
+            }            
+            int currentUnVisitedSize = unvisited.size();            
             for (int i=0; i<currentUnVisitedSize; i++) {
                 if (std::find(visited.begin(), visited.end(), unvisited[i]) == visited.end()) {
                     visited.push_back(unvisited[i]);
+                }
+                if (unvisited[i] == targetVertex) {
+                    return visited;
                 }
                 for (int j=0; j<unvisited[i]->neightbours.size(); j++) {
                     // if not yet visited and not already in unvisited list, add to unvisited list
@@ -50,7 +62,7 @@ class Graph {
             }
             // if there are more unvisited then visited, then it means we need to continue traversing
             if (unvisited.size() > visited.size()) {
-                visited = BFT(visited, unvisited);
+                visited = BFSReursive(startVertex, targetVertex, visited, unvisited);
             }
             return visited;
         };
@@ -95,12 +107,46 @@ class Graph {
             return visited;
         };
         
-        static std::vector<Vertex*> DFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path) {            
+        static std::vector<Vertex*> DFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path, std::map<Vertex*, bool> discoveredMap) {            
+            std::stack<Vertex*> vs;                        
             
+            vs.push(startVertex);
+            while(!vs.empty()) {
+                Vertex* s = vs.top();
+                vs.pop();
+                if (discoveredMap[s]) { // we skip any vertices that are already in the path
+                    continue;
+                }                
+                discoveredMap[s] = true;
+                path.push_back(s);
+                if (s == targetVertex) {
+                    break;
+                }
+                for(Vertex* v : s->neightbours) {                    
+                    vs.push(v);                                                            
+                }
+            }            
             return path;
         };
 
-        static std::vector<Vertex*> BFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path) {
+        static std::vector<Vertex*> BFS(Vertex* startVertex, Vertex* targetVertex, std::vector<Vertex*> path, std::map<Vertex*, bool> discoveredMap) {
+            std::queue<Vertex*> qv;
+            qv.push(startVertex);
+            while(!qv.empty()) {
+                Vertex* s = qv.front();
+                qv.pop();
+                 if (discoveredMap[s]) { // we skip any vertices that are already in the path
+                    continue;
+                }                
+                discoveredMap[s] = true;
+                path.push_back(s);
+                if (s == targetVertex) {
+                    break;
+                }
+                for(Vertex* v : s->neightbours) {                    
+                    qv.push(v);                                                            
+                }
+            }
             return path;
         };
 
