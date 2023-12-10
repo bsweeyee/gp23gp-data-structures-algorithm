@@ -6,7 +6,6 @@
 #include <stack>
 #include <queue>
 #include <iostream>
-#include <algorithm>
 #include <limits>
 #include "Vertex.h"
 

@@ -13,6 +13,7 @@ namespace Sort {
     }
 
     int* selection_sort(int* array, int length) {
+        // selection sort keeps checking indices after i to find which value is lowest. then it swaps at the end, thus maintaining that any value smaller then i is sorted
         for(int i=0; i<length; i++) {
             int lowestIndex = i;
             for (int j=i + 1; j<length; j++) {
@@ -29,8 +30,9 @@ namespace Sort {
         return array;
     }
 
-    int* bubble_sort(int* array, int length) {     
-        for(int i=0; i<length; i++) {        
+    int* bubble_sort(int* array, int length) {             
+        for(int i=0; i<length; i++) {
+            // in this inner loop, the item at the jth index will keep swapping upwards until it hits its final position     
             for(int j=0; j<length - i - 1; j++) {
                 if (array[j] > array[j+1]) {
                     int temp = array[j];
@@ -44,13 +46,26 @@ namespace Sort {
 
     int* insertion_sort(int* array, int length) {    
         for(int i=1; i<length; i++) { // we start from 1 because insertion sort assumes first item to be sorted        
-            for(int j=0; j<i; j++) {
-                if (array[i] < array[j]) {
-                    int temp = array[j];
-                    array[j] = array[i];
-                    array[i] = temp;
-                }
-            } 
+            int j = i;
+            while (j > 0 && array[j-1] > array[j]) {
+                int temp = array[j];
+                array[j] = array[j-1];
+                array[j-1] = temp;
+                j -= 1;
+            }            
+        }
+        return array;
+    }
+
+    int* insertion_sort_deferred_swap(int* array, int length) {    
+        for(int i=1; i<length; i++) { // we start from 1 because insertion sort assumes first item to be sorted        
+            int x = array[i];
+            int j = i - 1;
+            while(j >=0 && x < array[j]) {
+                array[j+1] = array[j];                    
+                j -= 1;
+            }            
+            array[j+1] = x; 
         }
         return array;
     }
@@ -142,6 +157,7 @@ namespace Sort {
 
         int tempPivotIndex = left - 1;
         
+        // we set the new pivot index for the pivot if the value at i is smaller than pivot. this will then ultimately decide the final index for pivot
         for (int i=left; i<right; i++) {
             if (array[i] <= pivot) {
                 tempPivotIndex += 1;
@@ -161,13 +177,24 @@ namespace Sort {
         return tempPivotIndex;
     }
 
-    int* quick_sort(int* array, int left, int right) {
+    int* quick_sort_lomuto(int* array, int left, int right) {
         if (left < right) {
             // int partitionIdx = partitionHoare(array, left, right);
             // int partitionIdx = partitionStable(array, left, right);
             int partitionIdx = partitionLomuto(array, left, right);
-            array = quick_sort(array, left, partitionIdx-1);
-            array = quick_sort(array, partitionIdx+1, right);
+            array = quick_sort_lomuto(array, left, partitionIdx-1);
+            array = quick_sort_lomuto(array, partitionIdx+1, right);
+        }
+        return array;
+    }
+
+    int* quick_sort_hoare(int* array, int left, int right) {
+        if (left < right) {
+            int partitionIdx = partitionHoare(array, left, right);
+            // int partitionIdx = partitionStable(array, left, right);
+            // int partitionIdx = partitionLomuto(array, left, right);
+            array = quick_sort_hoare(array, left, partitionIdx-1);
+            array = quick_sort_hoare(array, partitionIdx+1, right);
         }
         return array;
     }

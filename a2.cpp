@@ -112,55 +112,24 @@ void saveCSV(std::string fileName, std::map<std::string, std::string> columns, l
 }
 
 void runSort(std::string type, int* array, int* sortedArray, int n) {
-    if (type == "es") {
-        print_array("Before sort", array, n);                            
-                                                    
-        reassign(array, sortedArray, n);
+    if (type == "es") {                                                    
         sortedArray = Sort::exchange_sort(sortedArray, n);                            
-
-        print_array("After sort", sortedArray, n);
     } else if (type == "ss") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
         sortedArray = Sort::selection_sort(sortedArray, n);
-        
-        print_array("After sort", sortedArray, n);
     } else if (type == "bs") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
         sortedArray = Sort::bubble_sort(sortedArray, n);
-        
-        print_array("After sort", sortedArray, n);
     } else if (type == "is") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
         sortedArray = Sort::insertion_sort(sortedArray, n);
-        
-        print_array("After sort", sortedArray, n);
+    } else if (type == "isds") {
+        sortedArray = Sort::insertion_sort_deferred_swap(sortedArray, n);
     } else if (type == "qs") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
-        sortedArray = Sort::quick_sort(sortedArray, 0, n-1);
-
-        print_array("After sort", sortedArray, n);
+        sortedArray = Sort::quick_sort_lomuto(sortedArray, 0, n-1);
+    } else if (type == "qsh") {
+        sortedArray = Sort::quick_sort_hoare(sortedArray, 0, n-1);
     } else if (type == "ms") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
         sortedArray = Sort::merge_sort(sortedArray, 0, n-1);
-
-        print_array("After sort", sortedArray, n);
     } else if (type == "cs") {
-        print_array("Before sort", array, n);
-
-        reassign(array, sortedArray, n);
         sortedArray = Sort::counting_sort(sortedArray, n, INTEGERS);
-        
-        print_array("After sort", sortedArray, n);
     }
 }
 
@@ -186,11 +155,12 @@ void runSearch(std::string type, std::string searchValue, int* array, int* sorte
 
 int main() {
     printf("--- How to use ---\n");
-    printf("Generate Random integers: \"gr <filename> <size>\", (eg. g Integers.txt 100)\n");    
-    printf("Generate Sort Random integers: \"grs <filename> <size>\", (eg. g Integers.txt 100)\n");        
+    printf("Generate Random integers: \"gr <filename> <size>\", (eg. g UnSortedRandomIntegers.txt 100)\n");    
+    printf("Generate Sorted Ascending Random integers: \"grsa <filename> <size>\", (eg. g SortedRandomIntegers.txt 100)\n");        
+    printf("Generate Sorted Descending Random integers: \"grsd <filename> <size>\", (eg. g SortedRandomIntegers.txt 100)\n");
+    printf("Use randomised unsorted data set each repetition: \"r <size>\", (eg. r 50)\n");
+    printf("Use randomised sorted data set each repetition: \"rs <size>\", (eg. rs 50)\n");   
     printf("Load Sort integers: \"l <filename>\", (eg. l Integers.txt)\n");
-    printf("Randomise data set each cycle: \"r <size>\", (eg. r 50)\n");
-    printf("Randomise sorted data set each cycle: \"rs <size>\", (eg. rs 50)\n");   
     printf("-------------------\n");
 
     // initialize list of random int from 0-1000    
@@ -232,7 +202,7 @@ int main() {
                 }
                 myfile.close();
             }
-        } else if (o[0] == "grs") {
+        } else if (o[0] == "grsa" || o[0] == "grsd") {
             std::ofstream myfile (o[1]);
             int n = std::stoi(o[2]);
             int* tempArray = new int[n];
@@ -241,13 +211,21 @@ int main() {
                 tempArray[i] = std::rand() % INTEGERS;
             }
             tempArray = Sort::counting_sort(tempArray, n, INTEGERS);
-
+            
             if (myfile.is_open()) {                
                 myfile << n; // first value in line is always size of integers 
                 myfile << "\n";
-                for(int i=0; i<n; i++) {
-                    myfile << tempArray[i];
-                    myfile << "\n";                                                    
+                
+                if (o[0] == "grsa") {
+                    for(int i=0; i<n; i++) {
+                        myfile << tempArray[i];
+                        myfile << "\n";                                                    
+                    }
+                } else {
+                    for(int i=n-1; i>=0; i--) {
+                        myfile << tempArray[i];
+                        myfile << "\n";                                                    
+                    }
                 }
                 myfile.close();
             }            
@@ -301,10 +279,11 @@ int main() {
                     printf("Selection sort: \"ss <optional: repetition>\"\n");
                     printf("Bubble sort: \"bs <optional: repetition>\"\n");
                     printf("Insertion sort: \"is <optional: repetition>\"\n");
+                    printf("Insertion sort (deferred swap): \"isds <optional: repetition>\"\n");
                     printf("Counting sort: \"cs <optional: repetition>\"\n");
-                    printf("Quick sort: \"qs <optional: repetition>\"\n");
+                    printf("Quick sort (Lomuto): \"qs <optional: repetition>\"\n");
+                    printf("Quick sort (Hoare): \"qsh <optional: repetition>\"\n");
                     printf("Merge sort: \"ms <optional: repetition>\"\n");
-                    printf("Heap sort: \"hs <optional: repetition>\"\n");
                     printf("Binary search (recursive): \"bsr <value>\"\n");
                     printf("Binary search (loop): \"bsl <value>\"\n");
                     printf("-------------------\n"); 
@@ -331,22 +310,27 @@ int main() {
                         int reps = std::stoi(o[1]);
                         while(reps > 0) {                        
                             reps -= 1;
-                            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();    
                             
-                            runSort(o[0], array, sortedArray, n);
-                            runSearch(o[0], o[1], array, sortedArray, n);
-
+                            print_array("Before sort", array, n);                                                                            
+                            reassign(array, sortedArray, n);
+                            
+                            std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();                                
+                            runSort(o[0], array, sortedArray, n);                            
                             std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+                            
+                            print_array("After sort", sortedArray, n);                            
+                            runSearch(o[0], o[1], array, sortedArray, n);
+                            
                             auto time = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
                             printf("[%s] time: %lld us\n", o[0].c_str(), time.count());
-                            
                             std::string suffix = ".txt";
                             std::string prefix = "data/";
                             int len = fileName.length();
                                                                             
                             std::map<std::string, std::string> m;
                             m["SortType"] = o[0];
-                            m["Range"] = fileName.substr(prefix.length(), len - suffix.length() - prefix.length());
+                            m["Size"] = to_string(n);                            
+                            m["Range"] = fileName.substr(prefix.length(), len - suffix.length() - prefix.length() - m["Size"].length());
 
                             saveCSV("sort_data", m, time.count());
                         }                    
@@ -360,10 +344,11 @@ int main() {
                 printf("Selection sort: \"ss <optional: repetition>\"\n");
                 printf("Bubble sort: \"bs <optional: repetition>\"\n");
                 printf("Insertion sort: \"is <optional: repetition>\"\n");
+                printf("Insertion sort (deferred swap): \"isds <optional: repetition>\"\n");
                 printf("Counting sort: \"cs <optional: repetition>\"\n");
-                printf("Quick sort: \"qs <optional: repetition>\"\n");
+                printf("Quick sort (Lomuto): \"qs <optional: repetition>\"\n");
+                printf("Quick sort (Hoare): \"qsh <optional: repetition>\"\n");
                 printf("Merge sort: \"ms <optional: repetition>\"\n");
-                printf("Heap sort: \"hs <optional: repetition>\"\n");
                 printf("Binary search (recursive): \"bsr <value>\"\n");
                 printf("Binary search (loop): \"bsl <value>\"\n");
                 printf("-------------------\n"); 
@@ -393,7 +378,6 @@ int main() {
                     int reps = std::stoi(o[1]);
                     while(reps > 0) {                        
                         reps -= 1;
-                        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();    
                         
                         for(int i=0; i<size; i++) {
                             array[i] = std::rand() % INTEGERS;
@@ -401,19 +385,32 @@ int main() {
                         if (randomType == 1) {
                             Sort::counting_sort(array, size, INTEGERS);
                         }
+                        print_array("Before sort", array, size);                                                                            
+                        reassign(array, sortedArray, size);
+                        
+                        
+                        std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();    
                         runSort(o[0], array, sortedArray, size);
+                        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+                        print_array("After sort", sortedArray, size);
+
                         runSearch(o[0], o[1], array, sortedArray, size);
 
-                        std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
                         auto time = std::chrono::duration_cast<std::chrono::microseconds>(end - begin);
                         printf("[%s] time: %lld us\n", o[0].c_str(), time.count());
                         
                         std::string suffix = ".txt";
-                        std::string prefix = "data/";                        
+                        std::string prefix = "data/";                                                
                                                                         
                         std::map<std::string, std::string> m;
                         m["SortType"] = o[0];
-                        m["Range"] = "RandomGenerateInt" + std::to_string(size);
+                        m["Size"] = size;
+                        if (randomType == 1) {
+                            m["Range"] = "SortedAscendingGenRandomInt";
+                        } else {
+                            m["Range"] = "UnsortedGenRandomInt";
+                        }
 
                         saveCSV("sort_data", m, time.count());
                     }                    
