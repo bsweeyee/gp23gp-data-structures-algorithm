@@ -2,15 +2,14 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "clang++ build active file",
-            "command": "C:/msys64/ucrt64/bin/clang++.exe",
+            "label": "g++ build active file",
+            "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [                
                 "-std=c++17",
-                "-stdlib=libc++",                
-                "-g",               
+                "-g",                                
                 "${file}",                               
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-I${workspaceFolder}/include/"                                               
             ],
             "options": {
@@ -25,7 +24,7 @@
             "type": "shell",
             "label": "c++ run",
             "command":".\\${fileBasenameNoExtension}.exe",
-            "dependsOn":["clang++ build active file"],
+            "dependsOn":["g++ build active file"],
             "dependsOrder": "sequence",
             "group": {
                 "kind": "build",

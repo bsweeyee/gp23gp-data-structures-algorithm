@@ -80,9 +80,9 @@
         "__node_handle": "cpp",
         "__memory": "cpp"
     },
-    "C_Cpp.default.includePath": ["${default}", "${workspaceFolder}/include", "C:/msys64/ucrt64/include/python3.11"],
-    "C_Cpp.default.intelliSenseMode": "windows-clang-x64",
-    "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\clang++.exe",
+    "C_Cpp.default.includePath": ["${default}", "${workspaceFolder}/include"],
+    "C_Cpp.default.intelliSenseMode": "windows-gcc-x64",
+    "C_Cpp.default.compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
     "terminal.integrated.defaultProfile.windows": "PowerShell",
     "terminal.integrated.profiles.windows": {
         "PowerShell": {
