@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Tree/BinarySearchTree.h"
+#include "BinarySearchTree.h"
 
 int main() {
     int n = 10;

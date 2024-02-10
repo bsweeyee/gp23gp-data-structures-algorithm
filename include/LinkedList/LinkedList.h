@@ -20,6 +20,7 @@ class LinkedList {
         }
 
         Node<T>* Head;
+        Node<T>* Last;
         int Length;
         
         void Insert(int idx, T value);
@@ -35,7 +36,7 @@ class LinkedList {
 
 template<class T>
 void LinkedList<T>::Insert(int idx, T value) {
-    if (idx > Length) { 
+    if (idx >= Length) { 
         printf("index is larger then size of LinkedList\n");
         return;
     }
@@ -50,27 +51,44 @@ void LinkedList<T>::Insert(int idx, T value) {
         newNode->Next = insertNode->Next;
         insertNode->Next = newNode;
     }
+
+    if (idx == Length - 1) {
+        Last = newNode;
+    }
     
     Length += 1;
 }
 
 template<class T>
 void LinkedList<T>::Append(T value) {    
-    Node<T>* n = FindAt(Length);
     Node<T>* newNode = new Node<T>();
     newNode->Value = value;
-    n->Next = newNode;
+    if (Length == 0) {
+        Head = newNode;        
+    } else {
+        Node<T>* n = FindAt(Length - 1);
+        n->Next = newNode;
+    }
     Length += 1;
+    Last = newNode;
 }
 
 template<class T>
 void LinkedList<T>::Delete(int idx) {
+    if (idx >= Length) {
+        printf("index is larger then size of LinkedList\n");
+        return;
+    }
+
     Node<T>* n = FindAt(idx);
     if (idx == 0) {
         Head = n->Next;
     } else {
         Node<T>* d = FindAt(idx - 1);
         d->Next = n->Next;
+        if (idx == Length - 1) {
+            Last = d;
+        }
     }
     delete n;
 
@@ -91,11 +109,14 @@ Node<T>* LinkedList<T>::Find(T value) {
 
 template<class T>
 Node<T>* LinkedList<T>::FindAt(int idx) {    
-    if (idx == 0) return Head;
+    if (idx == 0) { 
+        if (Head == nullptr) Head = new Node<T>();
+        return Head;
+    }
 
     Node<T>* n = Head;
     int i = 0;
-    while(i < idx - 1) {                
+    while(i < idx) {                
         n= n->Next;
         i++;
     }    

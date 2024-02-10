@@ -7,7 +7,7 @@
 #include <chrono>
 #include <cstring>
 #include "Map/Map.h"
-#include "HashMap/HashMap.h"
+#include "Map/HashMap.h"
 #include "Utility/DictionaryGenerator.h"
 
 int main() {

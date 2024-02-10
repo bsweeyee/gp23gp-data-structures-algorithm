@@ -3,7 +3,7 @@
 #include <sstream>
 #include <fstream>
 #include <map>
-#include "Sort/Sort.h"
+#include "Sort.h"
 
 using namespace std;
 

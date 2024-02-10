@@ -23,7 +23,7 @@
         {
             "type": "shell",
             "label": "c++ run",
-            "command":".\\${fileBasenameNoExtension}.exe",
+            "command":"${fileDirname}\\${fileBasenameNoExtension}.exe",
             "dependsOn":["g++ build active file"],
             "dependsOrder": "sequence",
             "group": {

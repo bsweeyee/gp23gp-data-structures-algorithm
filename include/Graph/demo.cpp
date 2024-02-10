@@ -7,7 +7,7 @@
 #include <map>
 #include <sstream>
 #include <chrono>
-#include "Graph/Grid.h"
+#include "Grid.h"
 
 void saveCSV(std::string fileName, std::map<std::string, std::string> columns, long long time) {
     std::ifstream infile("stats/" + fileName + ".csv");

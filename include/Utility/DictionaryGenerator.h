@@ -4,7 +4,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "HashMap/HashMap.h"
+#include "Map/HashMap.h"
 #include "Map/Map.h"
 
 class DictionaryGenerator {
