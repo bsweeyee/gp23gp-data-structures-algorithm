@@ -6,11 +6,24 @@
             "command": "C:\\msys64\\ucrt64\\bin\\g++.exe",
             "args": [                
                 "-std=c++17",
-                "-g",                                
-                "${file}",                               
+                "-g",
+                "lib/glad/src/glad.c",   
+                "src/Engine/gfx/\\*.cpp",
+                "src/Engine/scene/\\*.cpp",
+                "src/Engine/\\*.cpp",                                                
+                "src/\\*.cpp",
+                "-I${workspaceFolder}/include/",
+                "-I${workspaceFolder}/lib/glad/include/",
+                "-I${workspaceFolder}/lib/GLFW/include/",
+                "-I${workspaceFolder}/lib/glm",
+                "-I${workspaceFolder}/lib/glm/gtc",
+                "-I${workspaceFolder}/src/Engine/gfx",
+                "-I${workspaceFolder}/src/Engine/scene",
+                "-I${workspaceFolder}/src/Engine",
+                "-L${workspaceFolder}/lib/",                
+                "-lglfw3dll",
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe",
-                "-I${workspaceFolder}/include/"                                               
+                "${workspaceFolder}\\bin\\${fileBasenameNoExtension}.exe",
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
@@ -23,7 +36,7 @@
         {
             "type": "shell",
             "label": "c++ run",
-            "command":"${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "command":"${workspaceFolder}\\bin\\${fileBasenameNoExtension}.exe",
             "dependsOn":["g++ build active file"],
             "dependsOrder": "sequence",
             "group": {
