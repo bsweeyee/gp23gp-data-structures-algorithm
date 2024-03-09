@@ -12,12 +12,10 @@ MiniEngine::MiniEngine() {
 
 MiniEngine::~MiniEngine() {
     delete window;
-    delete renderer;
 }
 
 void MiniEngine::initialize(const char* title, int width, int height) {
     window = new gfx::Window();
-    renderer = new gfx::Renderer();
 
     QueryPerformanceFrequency(&clock_freq);
 	QueryPerformanceCounter(&last_frame_time);
@@ -46,6 +44,8 @@ bool MiniEngine::beginFrame() {
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    Sleep(1);
 
     return glfwWindowShouldClose(window->window);
 }

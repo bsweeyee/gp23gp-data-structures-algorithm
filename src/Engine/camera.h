@@ -11,6 +11,7 @@ public:
     glm::mat4 projection = glm::mat4(1);
 
     void update();
+    void draw();
 private:
 
 };

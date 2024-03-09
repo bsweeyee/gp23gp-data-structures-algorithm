@@ -19,6 +19,7 @@
                 "-I${workspaceFolder}/lib/glm/gtc",
                 "-I${workspaceFolder}/src/Engine/gfx",
                 "-I${workspaceFolder}/src/Engine/scene",
+                "-I${workspaceFolder}/src/Engine/math",
                 "-I${workspaceFolder}/src/Engine",
                 "-L${workspaceFolder}/lib/",                
                 "-lglfw3dll",

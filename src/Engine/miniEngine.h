@@ -1,6 +1,5 @@
 #pragma once
 #include <windows.h>
-#include "gfx/renderer.h"
 #include "gfx/window.h"
 #include "input.h"
 
@@ -27,7 +26,6 @@ public:
     ~MiniEngine();
     
     gfx::Window* window = nullptr;
-    gfx::Renderer* renderer = nullptr;
     
     static double mouse_screen_x;
     static double mouse_screen_y;

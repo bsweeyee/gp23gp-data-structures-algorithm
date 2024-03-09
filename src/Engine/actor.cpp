@@ -13,11 +13,10 @@ void Actor::draw(Camera& camera, gfx::Shader* shader) {
 
 void Actor::update() {    
     if (engine.keyDown(Key::E)) {
-        transform->rotate(0, 0, 10 * engine.deltaTime());
+        transform->rotate(Transform::worldUp, 10 * engine.deltaTime());                 
     }
     if (engine.keyDown(Key::Q)) {
-        transform->rotate(0, 0, -10 * engine.deltaTime());
+        transform->rotate(Transform::worldUp, -10 * engine.deltaTime());        
     }
-
     transform->update();
 }
